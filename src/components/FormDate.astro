@@ -1,0 +1,36 @@
+---
+import { z } from "astro:content";
+import type { FormContext } from "../utils/collections";
+import FormField from "./FormField.astro";
+
+interface Props {
+  schema: z.ZodDate;
+  context: FormContext;
+  value?: Date;
+}
+
+const { context, schema, value } = Astro.props;
+const isRequired = !context.optional;
+---
+
+<FormField
+  label={context.label}
+  required={isRequired}
+  description={schema.description ?? context.description}
+>
+  <input
+    type="date"
+    name={`d_${context.label}`}
+    required={!context.optional}
+    value={value?.toISOString().slice(0, 10)}
+  />
+</FormField>
+
+<style>
+  input {
+    width: 15rem;
+    background-color: var(--sl-color-gray-6);
+    border: 1px solid var(--sl-color-gray-5);
+    padding: 0.75em 1em;
+  }
+</style>

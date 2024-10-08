@@ -1,0 +1,45 @@
+---
+import { z } from "astro:content";
+import FormObject from "./FormObject.astro";
+import FormString from "./FormString.astro";
+import FormDate from "./FormDate.astro";
+import FormBoolean from "./FormBoolean.astro";
+import FormEnum from "./FormEnum.astro";
+import FormEffects from "./FormEffects.astro";
+import type { FormContext } from "../utils/collections";
+import FormOptional from "./FormOptional.astro";
+import FormNumber from "./FormNumber.astro";
+import FormDefault from "./FormDefault.astro";
+
+interface Props {
+  schema: z.ZodType;
+  context?: FormContext;
+  value?: any;
+}
+
+const { schema, context = {}, value } = Astro.props;
+---
+
+{
+  schema instanceof z.ZodObject ? (
+    <FormObject schema={schema} context={context} value={value} />
+  ) : schema instanceof z.ZodString ? (
+    <FormString schema={schema} context={context} value={value} />
+  ) : schema instanceof z.ZodNumber ? (
+    <FormNumber schema={schema} context={context} value={value} />
+  ) : schema instanceof z.ZodDate ? (
+    <FormDate schema={schema} context={context} value={value} />
+  ) : schema instanceof z.ZodBoolean ? (
+    <FormBoolean schema={schema} context={context} value={value} />
+  ) : schema instanceof z.ZodEnum ? (
+    <FormEnum schema={schema} context={context} value={value} />
+  ) : schema instanceof z.ZodEffects ? (
+    <FormEffects schema={schema} />
+  ) : schema instanceof z.ZodOptional ? (
+    <FormOptional schema={schema} context={context} value={value} />
+  ) : schema instanceof z.ZodDefault ? (
+    <FormDefault schema={schema} context={context} value={value} />
+  ) : (
+    "typeName" in schema._def && <p>{schema._def.typeName}</p>
+  )
+}

@@ -1,0 +1,42 @@
+---
+import Html from "../../components/Html.astro";
+import { collections } from "../../content/config";
+import { getCollection } from "astro:content";
+import type { CollectionKey } from "astro:content";
+import Card from "../../components/Card.astro";
+import { prettySlug } from "../../utils/pretty";
+
+const keys = Object.keys(collections) as CollectionKey[];
+---
+
+<Html>
+  <h2>Collections</h2>
+  <div class="grid">
+    {
+      keys.map(async (slug) => {
+        const documents = await getCollection(slug);
+        return (
+          <Card href={`/admin/${slug}`} class="card">
+            <h3>{prettySlug(slug)}</h3>
+            <p>{documents.length} entries</p>
+          </Card>
+        );
+      })
+    }
+  </div>
+</Html>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20em, 1fr));
+    gap: 1em;
+
+    & .card {
+      & > h3,
+      & > p {
+        margin: 0;
+      }
+    }
+  }
+</style>

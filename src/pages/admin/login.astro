@@ -1,0 +1,120 @@
+---
+import { z } from "astro:content";
+import Html from "../../components/Html.astro";
+import {
+  getIsFirstUser,
+  verifyPassword,
+  addHash,
+} from "../../utils/credentials";
+
+const USERNAME_REGEX = "[a-zA-Z0-9_@.\\-]{4,}";
+
+const isFirstUser = getIsFirstUser();
+
+const formSchema = z.object({
+  username: z.string().regex(new RegExp(USERNAME_REGEX)),
+  password: z.string(),
+});
+
+let loading = false;
+let errorMessage = "";
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const data = Object.fromEntries(formData.entries());
+  const validatedData = formSchema.safeParse(data);
+
+  if (validatedData.success) {
+    if (isFirstUser) {
+      addHash(validatedData.data.username, validatedData.data.password);
+    }
+
+    const isValid = verifyPassword(
+      validatedData.data.username,
+      validatedData.data.password
+    );
+
+    if (isValid) {
+      Astro.response.headers.set(
+        "Set-Cookie",
+        "astrocms-token=somedata; Path=/admin; HttpOnly; Max-Age=600"
+      );
+
+      Astro.response.headers.set("Refresh", "0");
+      loading = true;
+    } else {
+      errorMessage = "Invalid credentials. Please try again.";
+    }
+  } else {
+    errorMessage = "Invalid request. Please try again.";
+  }
+}
+---
+
+<Html hideNavbar>
+  <div>
+    {
+      loading ? (
+        <p>Logging in...</p>
+      ) : (
+        <>
+          <form method="post">
+            <label for="username">Username</label>
+            <input type="text" name="username" pattern={USERNAME_REGEX} />
+            <label for="password">Password</label>
+            <input type="password" name="password" />
+            <button type="submit">{isFirstUser ? "Register" : "Login"}</button>
+            {errorMessage !== "" && <p class="error">{errorMessage}</p>}
+          </form>
+        </>
+      )
+    }
+  </div>
+</Html>
+
+<style>
+  div {
+    width: 100%;
+    display: flex;
+    place-content: center;
+    padding-block: 10em;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+  }
+
+  input {
+    box-sizing: border-box;
+    width: 15rem;
+    background-color: var(--sl-color-gray-6);
+    border: 1px solid var(--sl-color-gray-5);
+    padding: 0.75em 1em;
+    margin-bottom: 2em;
+  }
+
+  label {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 0.5em;
+  }
+
+  button {
+    font-size: 18px;
+    font-weight: 600;
+    background: var(--sl-color-text-accent);
+    color: var(--sl-color-black);
+    padding: 0.6em 1em;
+    border-radius: 999rem;
+    width: 15rem;
+    border: unset;
+    margin-top: 1em;
+  }
+
+  .error {
+    margin-top: 2em;
+    color: hsl(0, 50%, 65%);
+  }
+</style>

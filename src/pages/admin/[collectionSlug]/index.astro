@@ -1,0 +1,76 @@
+---
+import { getCollection } from "astro:content";
+import { isValidCollectionSlug } from "../../../utils/collections";
+import Html from "../../../components/Html.astro";
+import Card from "../../../components/Card.astro";
+import CallToAction from "../../../components/CallToAction.astro";
+import { collections } from "../../../content/config";
+import type { z } from "astro:content";
+import { prettySlug } from "../../../utils/pretty";
+
+const collectionSlug = Astro.params.collectionSlug!;
+if (!isValidCollectionSlug(collectionSlug)) {
+  return new Response(null, { status: 400, statusText: "Bad request" });
+}
+const documents = await getCollection(collectionSlug);
+const schema = collections[collectionSlug].schema as
+  | z.ZodObject<any>
+  | undefined;
+---
+
+<Html>
+  <div class="header">
+    <h2>{prettySlug(collectionSlug)}</h2>
+    <CallToAction href={`/admin/${collectionSlug}/new`} title="New" />
+  </div>
+  {schema?.description && <p>{schema?.description}</p>}
+
+  <div class="grid">
+    {
+      documents.map((document) => {
+        const slug = "slug" in document ? document.slug : document.id;
+        return (
+          <Card href={`/admin/${collectionSlug}/${slug}`} class="card">
+            <h4>{prettySlug(slug)}</h4>
+          </Card>
+        );
+      })
+    }
+  </div>
+</Html>
+
+<style>
+  .header {
+    display: flex;
+    place-items: center;
+    gap: 1.5em;
+    margin-top: 1.5em;
+
+    &:not(:has(+ p)) {
+      margin-bottom: 1.5em;
+    }
+
+    & > h2 {
+      margin-top: 0;
+      margin-bottom: 0.3em;
+    }
+  }
+
+  p {
+    margin: 0;
+    margin-bottom: 3em;
+    color: var(--sl-color-gray-2);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(40em, 1fr));
+    gap: 1em;
+
+    & .card {
+      & > h4 {
+        margin: 0;
+      }
+    }
+  }
+</style>

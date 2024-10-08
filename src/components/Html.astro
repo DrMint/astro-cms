@@ -1,0 +1,125 @@
+---
+import Navbar from "./Navbar.astro";
+import Topbar from "./Topbar.astro";
+
+interface Props {
+  hideNavbar?: boolean;
+}
+
+const { hideNavbar } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro</title>
+  </head>
+  <body>
+    <Topbar />
+    <div class="layout">
+      {!hideNavbar && <Navbar />}
+      <main>
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --font-size-increase: (2px + min(0.4vw, 5px));
+    --font-size-xs: 12px;
+    --font-size-s: 14px;
+    --font-size-m: 16px;
+    --font-size-l: calc(16px + var(--font-size-increase) * 0.4);
+    --font-size-xl: calc(16px + var(--font-size-increase) * 0.9);
+    --font-size-2xl: calc(16px + var(--font-size-increase) * 1.6);
+    --font-size-3xl: calc(16px + var(--font-size-increase) * 2.5);
+    --font-size-4xl: calc(16px + var(--font-size-increase) * 3.5);
+    --font-size-5xl: calc(16px + var(--font-size-increase) * 7.5);
+    color-scheme: light dark;
+
+    --sl-color-white: hsl(0, 0%, 100%);
+    --sl-color-gray-1: hsl(224, 20%, 94%);
+    --sl-color-gray-2: hsl(224, 6%, 77%);
+    --sl-color-gray-3: hsl(224, 6%, 56%);
+    --sl-color-gray-4: hsl(224, 7%, 36%);
+    --sl-color-gray-5: hsl(224, 10%, 23%);
+    --sl-color-gray-6: hsl(224, 14%, 16%);
+    --sl-color-black: hsl(224, 10%, 10%);
+
+    --sl-color-accent-high: hsl(224, 100%, 85%);
+    --sl-color-text-accent: var(--sl-color-accent-high);
+  }
+
+  button {
+    padding: 0.5em 1em;
+    cursor: pointer;
+    border-radius: 0.8em;
+    border-style: solid;
+  }
+
+  a {
+    color: white;
+    text-decoration: none;
+  }
+
+  h1 {
+    font-size: var(--font-size-5xl);
+    letter-spacing: -0.03em;
+    font-weight: 900;
+  }
+
+  h2 {
+    font-size: var(--font-size-4xl);
+    letter-spacing: -0.03em;
+    font-weight: 900;
+  }
+
+  h3 {
+    font-size: var(--font-size-3xl);
+    letter-spacing: -0.025em;
+    font-weight: 800;
+  }
+
+  h4 {
+    font-size: var(--font-size-xl);
+    letter-spacing: -0.025em;
+    font-weight: 600;
+  }
+</style>
+
+<style>
+  .layout {
+    display: flex;
+    height: calc(100vb - 65px);
+  }
+
+  main {
+    padding: 1.5em 3em;
+    padding-bottom: 5em;
+    height: calc(100vb - 65px);
+    box-sizing: border-box;
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  html,
+  body {
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    height: 100vb;
+  }
+
+  body {
+    background-color: var(--sl-color-black);
+    color: white;
+    font-family: sans-serif;
+  }
+</style>

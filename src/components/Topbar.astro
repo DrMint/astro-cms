@@ -1,0 +1,57 @@
+---
+import { Image } from "astro:assets";
+import astroLogo from "../images/astro-logo-light-gradient.png";
+import cmsLogo from "../images/cms-logo.png";
+---
+
+<header>
+  <div>
+    <a href="/"> <Image src={astroLogo} class="astro" alt="" /></a>
+    <a href="/admin">
+      <Image src={cmsLogo} class="cms" alt="" />
+    </a>
+  </div>
+</header>
+
+<style>
+  header {
+    height: 4rem;
+    background-color: var(--sl-color-gray-6);
+    border-bottom: 1px solid var(--sl-color-black);
+
+    display: flex;
+    gap: 8em;
+    align-items: center;
+
+    padding-inline: 13px;
+
+    img {
+      transition: transform .18s cubic-bezier(.23,1,.32,1);
+      &:hover {
+        transform: translateY(-0.15rem);
+      }
+    }
+
+    .astro {
+      height: auto;
+      width: 128px;
+      margin-top: 2px;
+    }
+
+    .cms {
+      width: auto;
+      height: 14px;
+    }
+
+    & > div {
+      display: flex;
+      place-items: center;
+      gap: 4px;
+    }
+
+    a {
+      display: contents;
+      font-weight: 600;
+    }
+  }
+</style>

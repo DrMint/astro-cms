@@ -1,0 +1,99 @@
+---
+import type { CollectionKey } from "astro:content";
+import { collections } from "../content/config";
+import { prettySlug } from "../utils/pretty";
+
+const keys = Object.keys(collections) as CollectionKey[];
+const { pathname } = Astro.url;
+---
+
+<nav>
+  <details open>
+    <summary>Collections</summary>
+    <ul>
+      {
+        keys.map((slug) => (
+          <li>
+            <a
+              href={`/admin/${slug}`}
+              class:list={{ active: pathname.includes(`admin/${slug}`) }}
+            >
+              {prettySlug(slug)}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </details>
+
+  <details open>
+    <summary>Gallery</summary>
+  </details>
+
+  <details open>
+    <summary>Users</summary>
+  </details>
+
+  <details open>
+    <summary>Account</summary>
+    <ul>
+      <li>
+        <a href={`/admin/logout`}>Logout</a>
+      </li>
+    </ul>
+  </details>
+</nav>
+
+<style>
+  nav {
+    width: 300px;
+    background-color: var(--sl-color-gray-6);
+    padding: 1.2em 1.5em;
+    padding-right: 1em;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+
+    height: calc(100vb - 65px);
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+
+  summary {
+    font-weight: 700;
+    margin: 0;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-block: 6px;
+  }
+
+  li {
+    list-style: none;
+    border-inline-start: 1px solid var(--sl-color-gray-5);
+    padding-left: 0.5rem;
+  }
+
+  a {
+    display: block;
+    border-radius: 0.25rem;
+    padding: 0.4em 0.5em;
+    font-size: 14px;
+    color: var(--sl-color-gray-2);
+
+    &.active {
+      background-color: var(--sl-color-text-accent);
+      color: var(--sl-color-gray-6);
+      font-weight: 700;
+    }
+  }
+</style>

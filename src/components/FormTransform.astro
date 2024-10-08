@@ -1,0 +1,14 @@
+---
+import { z } from "astro:content";
+
+interface Props {
+  schema: z.ZodEffects<any>;
+}
+
+const { schema } = Astro.props;
+const error = await schema.safeParseAsync({ collection: "", slug: "" });
+const regex = /Reference to ([a-zA-Z-_]*) invalid/;
+const collection = JSON.stringify(error).match(regex)?.[1];
+---
+
+<p>Reference to {collection}</p>

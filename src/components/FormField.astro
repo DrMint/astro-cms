@@ -1,0 +1,51 @@
+---
+import { isDefined } from "../utils/asserts";
+import { prettySlug } from "../utils/pretty";
+
+interface Props {
+  label?: string | undefined;
+  required?: boolean | undefined;
+  description?: string | undefined;
+}
+
+const { label, description, required } = Astro.props;
+---
+
+<div>
+  {
+    isDefined(label) && (
+      <label>
+        {prettySlug(label)}
+        {required && <span class="require"> *</span>}
+      </label>
+    )
+  }
+  <slot />
+  {description && <p>{description}</p>}
+</div>
+
+<style>
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+
+  label {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .require {
+    color: var(--sl-color-accent-high);
+    font-size: 14px;
+  }
+
+  p {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--sl-color-gray-3);
+    margin: 0;
+    margin-bottom: 1em;
+  }
+</style>

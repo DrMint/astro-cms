@@ -1,0 +1,108 @@
+---
+import { isUndefined } from "../../../../utils/asserts";
+import { deleteEntry, writeEntry } from "../../../../utils/fs";
+import YAML from "yaml";
+import { getEntryContext } from "../../../../utils/collections";
+
+const collectionSlug = Astro.params.collectionSlug!;
+const documentSlug = Astro.params.documentSlug!;
+
+const context = await getEntryContext({
+  collection: collectionSlug,
+  slug: documentSlug,
+});
+
+console.log(context);
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  console.log(formData);
+
+  if (context.schema) {
+  }
+
+  const jsonData = Object.fromEntries(
+    [...formData.entries()].map(([key, value]) => {
+      const keyPrefix = key.slice(0, 2);
+
+      if (value === "") {
+        return [];
+      }
+
+      switch (keyPrefix) {
+        case "s_":
+          return [key.substring(2), value];
+
+        case "d_":
+          return [key.substring(2), new Date(value.toString())];
+
+        case "n_":
+          return [key.substring(2), parseFloat(value.toString())];
+
+        case "b_":
+          return [key.substring(2), value.toString() === "on"];
+
+        case "c_":
+          if (
+            [...formData.keys()].some((key) => key === `b_${key.substring(2)}`)
+          ) {
+            return [];
+          }
+          return [key.substring(2), false];
+
+        default:
+          return [key, value];
+      }
+    })
+  );
+
+  delete jsonData.slug;
+  delete jsonData.body;
+
+  if (context.schema) {
+    const schemaResult = context.schema.safeParse(jsonData);
+
+    if (!schemaResult.success) {
+      console.warn(schemaResult.error.issues);
+      return new Response(null, { status: 400, statusText: "Bad request" });
+    }
+  }
+
+  const newSlug = formData.get("s_slug")?.toString();
+  const newFilename = `${newSlug}${context.extension}`;
+
+  if (isUndefined(newSlug)) {
+    return new Response(null, { status: 400, statusText: "Bad request" });
+  }
+
+  if (context.extension === ".json") {
+    await writeEntry(
+      context.collectionSlug,
+      newFilename,
+      JSON.stringify(jsonData, null, 2)
+    );
+  } else if (context.extension === ".md") {
+    const frontmatter = YAML.stringify(jsonData);
+    await writeEntry(
+      context.collectionSlug,
+      newFilename,
+      `---\n${frontmatter}---\n\n${formData.get("body")}`
+    );
+  } else if (context.extension === ".yml") {
+    await writeEntry(
+      context.collectionSlug,
+      newFilename,
+      YAML.stringify(jsonData)
+    );
+  }
+
+  if (documentSlug !== "new" && documentSlug !== newSlug) {
+    await deleteEntry(
+      context.collectionSlug,
+      `${documentSlug}${context.extension}`
+    );
+  }
+
+  return Astro.redirect(`/admin/${collectionSlug}`);
+}
+---

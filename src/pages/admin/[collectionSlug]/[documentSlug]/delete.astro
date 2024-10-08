@@ -1,0 +1,22 @@
+---
+import { getEntryContext } from "../../../../utils/collections";
+import { isDefined } from "../../../../utils/asserts";
+import { deleteEntry } from "../../../../utils/fs";
+
+const collectionSlug = Astro.params.collectionSlug!;
+const documentSlug = Astro.params.documentSlug!;
+
+const context = await getEntryContext({
+  collection: collectionSlug,
+  slug: documentSlug,
+});
+
+if (isDefined(context.document)) {
+  await deleteEntry(
+    context.collectionSlug,
+    `${documentSlug}${context.extension}`
+  );
+}
+
+return Astro.redirect(`/admin/${collectionSlug}`);
+---

@@ -1,0 +1,27 @@
+---
+import { z } from "astro:content";
+import type { FormContext } from "../utils/collections";
+import FormField from "./FormField.astro";
+
+interface Props {
+  schema: z.ZodBoolean;
+  context: FormContext;
+  value?: boolean;
+}
+
+const { context, schema, value } = Astro.props;
+const isRequired = !context.optional;
+---
+
+<FormField
+  label={context.label}
+  required={isRequired}
+  description={schema.description ?? context.description}
+>
+  <input
+    name={`b_${context.label}`}
+    type="checkbox"
+    checked={value ?? context.default}
+  />
+  <input type="hidden" name={`c_${context.label}`} value="false" />
+</FormField>

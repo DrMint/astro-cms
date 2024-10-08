@@ -1,0 +1,40 @@
+---
+import CallToAction from "../../../../components/CallToAction.astro";
+import Form from "../../../../components/Form.astro";
+import Html from "../../../../components/Html.astro";
+import { getEntryContext } from "../../../../utils/collections";
+import { prettySlug } from "../../../../utils/pretty";
+
+const collectionSlug = Astro.params.collectionSlug!;
+const documentSlug = Astro.params.documentSlug!;
+
+const context = await getEntryContext({
+  collection: collectionSlug,
+  slug: documentSlug,
+});
+---
+
+<Html>
+  <div class="header">
+    <h2>Editing {prettySlug(context.entrySlug)}</h2>
+    <CallToAction
+      href={`/admin/${collectionSlug}/${documentSlug}/delete`}
+      title="Delete"
+    />
+  </div>
+  <Form context={context} />
+</Html>
+
+<style>
+  .header {
+    display: flex;
+    place-items: center;
+    gap: 2em;
+    margin-block: 1.5em;
+
+    & > h2 {
+      margin-top: 0;
+      margin-bottom: 0.3em;
+    }
+  }
+</style>

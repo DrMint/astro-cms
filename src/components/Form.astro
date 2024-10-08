@@ -1,0 +1,50 @@
+---
+import { z } from "astro:content";
+import type { EntryContext } from "../utils/collections";
+import FormMarkdown from "./FormMarkdown.astro";
+import FormNode from "./FormNode.astro";
+import FormString from "./FormString.astro";
+
+interface Props {
+  context: EntryContext;
+}
+
+const { context } = Astro.props;
+const { schema, document, hasBody, collectionSlug, entrySlug } = context;
+---
+
+<form action={`/admin/${collectionSlug}/${entrySlug}/update`} method="post">
+  <FormString
+    schema={z.string()}
+    context={{ label: "slug" }}
+    value={entrySlug}
+  />
+
+  {schema && <FormNode schema={schema} value={document?.data} />}
+  {
+    hasBody && (
+      <FormMarkdown context={{ label: "body" }} value={document?.body ?? ""} />
+    )
+  }
+  <button type="submit">Save</button>
+</form>
+
+<style>
+  form {
+    display: flex;
+    flex-direction: column;
+    place-items: start;
+    gap: 24px;
+    margin-top: 3em;
+  }
+
+  button {
+    font-size: 18px;
+    font-weight: 600;
+    background: var(--sl-color-text-accent);
+    color: var(--sl-color-black);
+    padding: 0.6em 1em;
+    border-radius: 999rem;
+    border: unset;
+  }
+</style>

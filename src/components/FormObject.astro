@@ -1,0 +1,24 @@
+---
+import { z } from "astro:content";
+import FormNode from "./FormNode.astro";
+import type { FormContext } from "../utils/collections";
+
+interface Props {
+  schema: z.ZodObject<any>;
+  context: FormContext;
+  value?: any;
+}
+
+const { schema, context, value } = Astro.props;
+const keys = Object.keys(schema.keyof().Values);
+---
+
+{
+  keys.map((key) => (
+    <FormNode
+      schema={schema.shape[key]}
+      context={{ ...context, label: key }}
+      value={value?.[key]}
+    />
+  ))
+}

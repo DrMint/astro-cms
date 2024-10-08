@@ -1,0 +1,18 @@
+---
+import { z } from "astro:content";
+import FormTransform from "./FormTransform.astro";
+
+interface Props {
+  schema: z.ZodEffects<any>;
+}
+
+const { schema } = Astro.props;
+---
+
+{
+  schema._def.effect.type === "transform" ? (
+    <FormTransform schema={schema} />
+  ) : (
+    <p>Another effect</p>
+  )
+}

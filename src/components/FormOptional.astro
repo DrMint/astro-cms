@@ -1,0 +1,23 @@
+---
+import type { z } from "astro:content";
+import type { FormContext } from "../utils/collections";
+import FormNode from "./FormNode.astro";
+
+interface Props {
+  schema: z.ZodOptional<any>;
+  context: FormContext;
+  value?: any;
+}
+
+const { schema, context, value } = Astro.props;
+---
+
+<FormNode
+  schema={schema._def.innerType}
+  context={{
+    ...context,
+    optional: true,
+    description: schema.description ?? context.description,
+  }}
+  value={value}
+/>

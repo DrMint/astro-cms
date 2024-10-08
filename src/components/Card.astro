@@ -1,0 +1,36 @@
+---
+interface Props {
+  href: string;
+  class?: string;
+}
+
+const { href, class: classNames, ...otherProps } = Astro.props;
+---
+
+<a class="card" href={href}>
+  <div class={classNames} {...otherProps}>
+    <slot />
+  </div>
+</a>
+
+<style>
+  .card > div {
+    border: 1px solid var(--sl-color-gray-5);
+    background-color: var(--sl-color-gray-7);
+    padding: 2em 2em;
+
+    transition-duration: 100ms;
+    transition-property: background-color, border-color;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--sl-color-gray-3);
+      background-color: var(--sl-color-gray-6);
+    }
+
+    &:active {
+      border-color: var(--sl-color-gray-1);
+      background-color: var(--sl-color-gray-5);
+    }
+  }
+</style>
